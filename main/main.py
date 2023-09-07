@@ -51,7 +51,7 @@ def tcp():
 
                 print("Server is waiting for the client to signal readiness...")
 
-                # Wait for client's readiness signal
+                # Wait for the client's readiness signal
                 client, address = server.accept()
                 ready_signal = client.recv(1024).decode()
 
@@ -86,7 +86,7 @@ def tcp():
                 # Signal readiness to the server
                 client.send("Ready".encode())
 
-                # Wait for server's data transmission
+                # Wait for the server's data transmission
                 print("Waiting for data from the server...")
 
                 total_packets = 1000
