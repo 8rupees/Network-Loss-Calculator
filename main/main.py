@@ -10,10 +10,111 @@ print("""
 ░░░██║░░░╚█████╔╝██║░░░░░  ░░╚██╔╝░░██████╔╝  ╚██████╔╝██████╔╝██║░░░░░
 ░░░╚═╝░░░░╚════╝░╚═╝░░░░░  ░░░╚═╝░░░╚═════╝░  ░╚═════╝░╚═════╝░╚═╝░░░░░
 
-█▄▄ █▄█   █▀█ █░█ █▀█ █▀▀ █▀▀ █▀   ▄▀█ █▄░█ █▀▄   █▀█ █▀█ █▀█ █▀█ █ █▀▄
-█▄█ ░█░   █▀▄ █▄█ █▀▀ ██▄ ██▄ ▄█   █▀█ █░▀█ █▄▀   █▀▀ █▀▄ █▀▄ █▄█ █ █▄▀
- 
+█▄▄ █▄█   █▀█ █░█ █▀█ █▀▀ █▀▀ █▀ 
+█▄█ ░█░   █▀▄ █▄█ █▀▀ ██▄ ██▄ ▄█ 
+
           """) # Art Credit to fsymbols.com
+
+def tcp():
+
+    sel = None
+
+    while True:
+        try:
+            print("""Make Your Selection:
+            1)Host
+            2)Client
+                """)
+
+            sel = int(input("Enter an input: "))
+
+            if(sel in (1,2)):
+                break
+
+            else:
+                print("ERROR: MAKE A VALID SELECTION!")
+
+        except:
+            print("ERROR: MAKE A VALID SELECTION!")
+
+        finally:
+            if(sel == 1):
+
+
+                # Server socket setup
+                server_ip = '127.0.0.1'
+                server_port = int(input("Enter the port number: "))
+
+                server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                server.bind((server_ip, server_port))
+                server.listen()
+
+                print("Server is waiting for the client to signal readiness...")
+
+                # Wait for client's readiness signal
+                client, address = server.accept()
+                ready_signal = client.recv(1024).decode()
+
+                if ready_signal == "Ready":
+                    print("Client is ready. Starting data transmission...")
+
+                    total_packets = 1000
+
+                    for i in range(total_packets):
+                        message = f"Packet {i}".encode()
+                        client.send(message)
+
+                    print("Data transmission completed.")
+                else:
+                    print("Client not ready. Exiting.")
+
+                client.close()
+                server.close()
+
+
+
+            elif(sel == 2):
+
+
+                # Client socket setup
+                server_ip = '127.0.0.1'
+                server_port = int(input("Enter the port number: "))
+
+                client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                client.connect((server_ip, server_port))
+
+                # Signal readiness to the server
+                client.send("Ready".encode())
+
+                # Wait for server's data transmission
+                print("Waiting for data from the server...")
+
+                total_packets = 1000
+                received_packets = 0
+
+                while received_packets < total_packets:
+                    message = client.recv(1024).decode()
+
+                    if(message == ""):
+                        received_packets += 1
+                        pass
+
+                    else:
+                        print(f"\n Received: {message} \n")
+                        received_packets += 1
+
+
+                print("Data reception completed.")
+                client.close()
+
+                print(f"Packets Received: {received_packets}/{total_packets}")
+                print(f"Loss Percentage: {float(((total_packets - received_packets) * 100) / 1000)}%" )
+
+
+            else:
+                print("Achievement Unlocked: How Did We Get Here?")
+
+
 
 def upd():
 
@@ -25,7 +126,7 @@ def upd():
             1)Host
             2)Client
                 """)
-            
+
             sel = int(input("Enter an input: "))
 
             if(sel in (1,2)):
@@ -117,14 +218,14 @@ while True:
 
         else:
             print("ERROR: SELECT AND APPROPRIATE OPTION!")
-    
+
     except:
         print("ERROR: SELECT AND APPROPRIATE OPTION!")
-    
+
     finally:
 
         if(selector == 1):
-            pass
+            tcp()
 
         elif(selector == 2):
             upd()
